@@ -16,20 +16,21 @@
  (depends
    (ocaml (>= 4.04.0))
    (ppx_expect :with-test))
- (synopsis "Pretty-printing")
+ (synopsis "Pretty-printing library")
  (description "
-This library provides minimal support for Canonical S-expressions
-[1]. Canonical S-expressions are a binary encoding of S-expressions
-that is super simple and well suited for communication between
-programs.
+This library provides a lean alternative to the Format [1] module of
+the OCaml standard library. It aims to make it easy for users to do
+the right thing. If you have tried Format before but find its API
+complicated and difficult to use, then Pp might be a good choice for
+you.
 
-This library only provides a few helpers for simple applications. If
-you need more advanced support, such as parsing from more fancy input
-sources, you should consider copying the code of this library given
-how simple parsing S-expressions in canonical form is.
+Pp uses the same concepts of boxes and break hints, and the final
+rendering is done to formatter from the Format module. However it
+defines its own algebra which some might find easier to work with and
+reason about. No previous knowledge is required to start using this
+library, however the various guides for the Format module such as this
+one [2] should be applicable to Pp as well.
 
-To avoid a dependency on a particular S-expression library, the only
-module of this library is parameterised by the type of S-expressions.
-
-[1] https://en.wikipedia.org/wiki/Canonical_S-expressions
+[1]: https://caml.inria.fr/pub/docs/manual-ocaml/libref/Format.html
+[2]: http://caml.inria.fr/resources/doc/guides/format.en.html
 "))

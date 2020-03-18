@@ -155,3 +155,28 @@ let%expect_test _ =
     {|
     .....x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x
            x x x x x x x x x x x x x x |}]
+
+let%expect_test _ =
+  print
+    (Pp.vbox
+       ( Pp.box (Pp.text "Error: something went wrong!")
+       ++ Pp.cut
+       ++ Pp.box (Pp.text "Here are a few things you can do:")
+       ++ Pp.cut
+       ++ Pp.enumerate ~f:Fun.id
+            [ Pp.text
+                "read the documentation, double check the way you are using \
+                 this software to make sure you are not doing something wrong, \
+                 and hopefully fix the problem on your side and move on"
+            ; Pp.text
+                "strace furiously the program to try and understand why \
+                 exactly it is trying to do what it is doing"
+            ; Pp.text "report an issue upstream"
+            ; Pp.text "if all else fails"
+              ++ Pp.cut
+              ++ Pp.enumerate ~f:Pp.text
+                   [ "scream loudly at your computer"
+                   ; "take a break from your keyboard"
+                   ; "clear your head and try again"
+                   ]
+            ] ))
