@@ -179,4 +179,17 @@ let%expect_test _ =
                    ; "take a break from your keyboard"
                    ; "clear your head and try again"
                    ]
-            ] ))
+            ] ));
+  [%expect {|
+    Error: something went wrong!
+    Here are a few things you can do:
+    - read the documentation, double check the way you are using this software to
+      make sure you are not doing something wrong, and hopefully fix the problem
+      on your side and move on
+    - strace furiously the program to try and understand why exactly it is trying
+      to do what it is doing
+    - report an issue upstream
+    - if all else fails
+      - scream loudly at your computer
+      - take a break from your keyboard
+      - clear your head and try again |}]

@@ -17,4 +17,4 @@ reinstall: uninstall install
 clean:
 	dune clean
 
-.PHONY: default install uninstall reinstall clean
+.PHONY: default install uninstall reinstall clean test
