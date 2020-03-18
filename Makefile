@@ -17,4 +17,7 @@ reinstall: uninstall install
 clean:
 	dune clean
 
+all-supported-ocaml-versions:
+	dune runtest --workspace dune-workspace.dev
+
 .PHONY: default install uninstall reinstall clean test

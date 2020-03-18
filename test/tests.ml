@@ -163,7 +163,8 @@ let%expect_test _ =
        ++ Pp.cut
        ++ Pp.box (Pp.text "Here are a few things you can do:")
        ++ Pp.cut
-       ++ Pp.enumerate ~f:Fun.id
+       ++ Pp.enumerate
+            ~f:(fun x -> x)
             [ Pp.text
                 "read the documentation, double check the way you are using \
                  this software to make sure you are not doing something wrong, \
@@ -180,7 +181,8 @@ let%expect_test _ =
                    ; "clear your head and try again"
                    ]
             ] ));
-  [%expect {|
+  [%expect
+    {|
     Error: something went wrong!
     Here are a few things you can do:
     - read the documentation, double check the way you are using this software to

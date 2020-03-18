@@ -1,5 +1,5 @@
-module List = Stdlib.ListLabels
-module String = Stdlib.StringLabels
+module List = ListLabels
+module String = StringLabels
 
 type +'a t =
   | Nop
