@@ -91,10 +91,10 @@ module Render = struct
     | Tag (tag, t) -> tag_handler ppf tag t
 end
 
-let render = Render.render
+let to_fmt_with_tags = Render.render
 
-let rec render_ignore_tags ppf t =
-  render ppf t ~tag_handler:(fun ppf _tag t -> render_ignore_tags ppf t)
+let rec to_fmt ppf t =
+  Render.render ppf t ~tag_handler:(fun ppf _tag t -> to_fmt ppf t)
 
 let nop = Nop
 

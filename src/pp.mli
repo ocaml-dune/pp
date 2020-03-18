@@ -105,10 +105,10 @@ end
 (** {1 Rendering} *)
 
 (** Render a document to a classic formatter *)
-val render :
+val to_fmt : Format.formatter -> _ t -> unit
+
+val to_fmt_with_tags :
      Format.formatter
   -> 'a t
   -> tag_handler:(Format.formatter -> 'a -> 'a t -> unit)
   -> unit
-
-val render_ignore_tags : Format.formatter -> 'a t -> unit
