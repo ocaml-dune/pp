@@ -209,3 +209,16 @@ let%expect_test _ =
 x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x \
  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x
 |}]
+
+let pp_pair ppf (a,b) = Format.fprintf ppf "(%i,@ %i)" a b
+
+let%expect_test _ =
+  print (
+    Pp.text "hello" ++ Pp.newline ++
+    Pp.vbox (Pp.of_fmt pp_pair (1,2)) ++ Pp.space ++ Pp.text "foo"
+  );
+  [%expect{|
+    hello
+    (1,
+    2)
+    foo |}]

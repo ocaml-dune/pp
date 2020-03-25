@@ -21,6 +21,7 @@ type +'a t =
   | Newline
   | Text of string
   | Tag of 'a * 'a t
+  | Format of (Format.formatter -> unit)
 
 let rec map_tags t ~f =
   match t with
@@ -34,6 +35,7 @@ let rec map_tags t ~f =
   | Hovbox (indent, t) -> Hovbox (indent, map_tags t ~f)
   | (Verbatim _ | Char _ | Break _ | Newline | Text _) as t -> t
   | Tag (tag, t) -> Tag (f tag, map_tags t ~f)
+  | Format f -> Format f
 
 let rec filter_map_tags t ~f =
   match t with
@@ -52,6 +54,7 @@ let rec filter_map_tags t ~f =
     match f tag with
     | None -> t
     | Some tag -> Tag (tag, t) )
+  | Format f -> Format f
 
 module Render = struct
   open Format
@@ -94,6 +97,7 @@ module Render = struct
     | Newline -> pp_force_newline ppf ()
     | Text s -> pp_print_text ppf s
     | Tag (tag, t) -> tag_handler ppf tag t
+    | Format f -> f ppf
 end
 
 let to_fmt_with_tags = Render.render
@@ -174,3 +178,5 @@ let chain l ~f =
 module O = struct
   let ( ++ ) = seq
 end
+
+let of_fmt f x = Format (fun ppf -> f ppf x)
