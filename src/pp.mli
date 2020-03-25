@@ -172,3 +172,8 @@ val to_fmt_with_tags :
   -> 'a t
   -> tag_handler:(Format.formatter -> 'a -> 'a t -> unit)
   -> unit
+
+(** {1 Injection} *)
+
+(** Inject a classic formatter in a document *)
+val of_fmt : (Format.formatter -> 'a -> unit) -> 'a -> _ t
