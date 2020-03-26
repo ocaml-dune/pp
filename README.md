@@ -87,6 +87,25 @@ Here are a few things you can do:
 - : unit = ()
 ```
 
+Resources
+---------
+
+As mentioned earlier, [this Format guide][format-guide] can be a good
+starting point to understand the pretty-printing mechanics of `Pp`.
+Additionally, [Format Unraveled][format-unraveled] is a great resource
+for understanding the core mental model of `Format`. And since `Pp`
+uses the same concepts as `Format`, it can be a good resource for `Pp`
+too.
+
+Note that the Format Unraveled paper discuss some limitations of
+`Format` that are due to the fact that it never has the full document
+in-memory before rendering it. This does not apply to `Pp` since `Pp`
+clearly always construct the full document in-memory. However, since
+right now the only way to render a `Pp.t` is via the `Format` module,
+the same limitations that apply to `Format` apply to `Pp` as well. We
+might add another renderer in the future that does not have these
+limitations if there is sufficient incentive to do so.
+
 History
 -------
 
@@ -157,6 +176,7 @@ module, while `easy-format` works with atoms, lists and labelled
 nodes.
 
 [format]: https://caml.inria.fr/pub/docs/manual-ocaml/libref/Format.html
+[format-unraveled]: https://hal.archives-ouvertes.fr/hal-01503081/file/format-unraveled.pdf
 [dune]: https://dune.build
 [fmt]: https://erratique.ch/software/fmt
 [format-guide]: http://caml.inria.fr/resources/doc/guides/format.en.html
