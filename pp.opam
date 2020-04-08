@@ -25,9 +25,9 @@ authors: [
   "Jeremie Dimino <jeremie@dimino.org>"
 ]
 license: "MIT"
-homepage: "https://github.com/diml/pp"
-doc: "https://diml.github.io/pp/"
-bug-reports: "https://github.com/diml/pp/issues"
+homepage: "https://github.com/ocaml-dune/pp"
+doc: "https://ocaml-dune.github.io/pp/"
+bug-reports: "https://github.com/ocaml-dune/pp/issues"
 depends: [
   "dune" {>= "2.0"}
   "ocaml" {>= "4.04.0"}
@@ -47,4 +47,4 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/diml/pp.git"
+dev-repo: "git+https://github.com/ocaml-dune/pp.git"
