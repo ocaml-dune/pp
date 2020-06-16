@@ -1,4 +1,9 @@
-module List = ListLabels
+module List = struct
+  include ListLabels
+
+  let map ~f t = rev (rev_map ~f t)
+end
+
 module String = StringLabels
 
 type +'a t =
