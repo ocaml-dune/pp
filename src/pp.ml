@@ -18,7 +18,7 @@ type +'a t =
   | Verbatim of string
   | Char of char
   | Break of int * int
-  | Wrapping_break of int * int
+  | Custom_break of (string * int * string) * (string * int * string)
   | Newline
   | Text of string
   | Tag of 'a * 'a t
@@ -33,8 +33,7 @@ let rec map_tags t ~f =
   | Hbox t -> Hbox (map_tags t ~f)
   | Hvbox (indent, t) -> Hvbox (indent, map_tags t ~f)
   | Hovbox (indent, t) -> Hovbox (indent, map_tags t ~f)
-  | (Verbatim _ | Char _ | Break _ | Wrapping_break _ | Newline | Text _) as t
-    ->
+  | (Verbatim _ | Char _ | Break _ | Custom_break _ | Newline | Text _) as t ->
     t
   | Tag (tag, t) -> Tag (f tag, map_tags t ~f)
 
@@ -49,8 +48,7 @@ let rec filter_map_tags t ~f =
   | Hbox t -> Hbox (filter_map_tags t ~f)
   | Hvbox (indent, t) -> Hvbox (indent, filter_map_tags t ~f)
   | Hovbox (indent, t) -> Hovbox (indent, filter_map_tags t ~f)
-  | (Verbatim _ | Char _ | Break _ | Wrapping_break _ | Newline | Text _) as t
-    ->
+  | (Verbatim _ | Char _ | Break _ | Custom_break _ | Newline | Text _) as t ->
     t
   | Tag (tag, t) -> (
     let t = filter_map_tags t ~f in
@@ -96,9 +94,7 @@ module Render = struct
     | Verbatim x -> pp_print_string ppf x
     | Char x -> pp_print_char ppf x
     | Break (nspaces, shift) -> pp_print_break ppf nspaces shift
-    | Wrapping_break (nspaces, shift) ->
-      pp_print_custom_break ppf ~fits:("", nspaces, "")
-        ~breaks:(" \\", shift, "")
+    | Custom_break (fits, breaks) -> pp_print_custom_break ppf ~fits ~breaks
     | Newline -> pp_force_newline ppf ()
     | Text s -> pp_print_text ppf s
     | Tag (tag, t) -> tag_handler ppf tag t
@@ -146,11 +142,9 @@ let char x = Char x
 
 let break ~nspaces ~shift = Break (nspaces, shift)
 
-let wrapping_break ~nspaces ~shift = Wrapping_break (nspaces, shift)
+let custom_break ~fits ~breaks = Custom_break (fits, breaks)
 
 let space = Break (1, 0)
-
-let wrapping_space = Wrapping_break (1, 0)
 
 let cut = Break (0, 0)
 
