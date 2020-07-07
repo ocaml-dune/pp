@@ -58,6 +58,16 @@ val cut : _ t
     which case the indentation will be reduced. *)
 val break : nspaces:int -> shift:int -> _ t
 
+(** [custom_break ~fits:(a, b, c) ~breaks:(x, y, z)] is a generalisation of
+    [break]. It also instructs the pretty-printing algorithm that the line may
+    be broken at this point. If it ends up being broken, [x] is printed, the
+    line breaks, [y] will be added to the indentation level and [z] is printed,
+    otherwise [a] will be printed, [b] spaces are printed and then [c] is
+    printed. The indentation [y] can be negative, in which case the indentation
+    will be reduced. *)
+val custom_break :
+  fits:string * int * string -> breaks:string * int * string -> _ t
+
 (** Force a newline to be printed *)
 val newline : _ t
 
