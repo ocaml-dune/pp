@@ -68,6 +68,36 @@ val break : nspaces:int -> shift:int -> _ t
 val custom_break :
   fits:string * int * string -> breaks:string * int * string -> _ t
 
+(** [extend_breaks t ~fits:(a, b, c) ~breaks:(x, y, z)] extends all the break
+    hints in a document.
+
+    Multiple [extend_breaks] compose using the following rule:
+
+    {[
+      extend_breaks ~fits:(a1, b1, c1) ~breaks:(x1, y1, z1)
+        (extend_breaks ~fits:(a2, b2, c2) ~breaks:(x2, y2, z2) t)
+      = extend_breaks
+          ~fits:(a1 ^ a2, b1 + b2, c2 ^ c1)
+          ~breaks:(x1 ^ x2, y1 + y2, z2 ^ z1)
+          t
+    ]}
+
+    Similarly, [extend_breaks] extends custom breaks using the following rule:
+
+    {[
+      extend_breaks ~fits:(a1, b1, c1) ~breaks:(x1, y1, z1)
+        (custom_breaks ~fits:(a2, b2, c2) ~breaks:(x2, y2, z2))
+      = cusotm_break
+          ~fits:(a1 ^ a2, b1 + b2, c2 ^ c1)
+          ~breaks:(x1 ^ x2, y1 + y2, z2 ^ z1)
+          t
+    ]}
+
+    Breaks produced using [space], [cut] or [break] are also extended by
+    [extend_breaks]. *)
+val extend_breaks :
+  'a t -> fits:string * int * string -> breaks:string * int * string -> 'a t
+
 (** Force a newline to be printed *)
 val newline : _ t
 
