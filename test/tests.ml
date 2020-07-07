@@ -209,3 +209,20 @@ let%expect_test _ =
 x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x \
  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x
 |}]
+
+let%expect_test _ =
+  print
+    (Pp.hovbox ~indent:2
+       (Pp.extend_breaks ~fits:("", 0, "") ~breaks:(" \\", 0, "")
+          (Pp.text
+             "opam install opam install capnp-rpc-lwt capnp-rpc-unix \
+              cohttp-lwt-unix current current_ansi current_docker current_git \
+              current_github current_rpc current_web dockerfile git-unix \
+              opam-0install prometheus prometheus-app")));
+  [%expect
+    {|
+opam install opam install capnp-rpc-lwt capnp-rpc-unix cohttp-lwt-unix \
+  current current_ansi current_docker current_git current_github \
+  current_rpc current_web dockerfile git-unix opam-0install prometheus \
+  prometheus-app
+|}]

@@ -6,6 +6,30 @@ end
 
 module String = StringLabels
 
+module Fit_or_break = struct
+  type t = string * int * string
+
+  let ( ^ ) a b =
+    match (a, b) with
+    | "", _ -> b
+    | _, "" -> a
+    | _ -> a ^ b
+
+  let compose (a, b, c) (d, e, f) = (a ^ d, b + e, f ^ c)
+end
+
+module Break = struct
+  type t =
+    { fits : Fit_or_break.t
+    ; breaks : Fit_or_break.t
+    }
+
+  let compose a b =
+    { fits = Fit_or_break.compose a.fits b.fits
+    ; breaks = Fit_or_break.compose a.breaks b.breaks
+    }
+end
+
 type +'a t =
   | Nop
   | Seq of 'a t * 'a t
@@ -17,9 +41,9 @@ type +'a t =
   | Hovbox of int * 'a t
   | Verbatim of string
   | Char of char
-  | Break of (string * int * string) * (string * int * string)
+  | Break of Break.t
+  | Extend_breaks of Break.t * 'a t
   | Newline
-  | Text of string
   | Tag of 'a * 'a t
 
 let rec map_tags t ~f =
@@ -32,8 +56,9 @@ let rec map_tags t ~f =
   | Hbox t -> Hbox (map_tags t ~f)
   | Hvbox (indent, t) -> Hvbox (indent, map_tags t ~f)
   | Hovbox (indent, t) -> Hovbox (indent, map_tags t ~f)
-  | (Verbatim _ | Char _ | Break _ | Newline | Text _) as t -> t
+  | (Verbatim _ | Char _ | Break _ | Newline) as t -> t
   | Tag (tag, t) -> Tag (f tag, map_tags t ~f)
+  | Extend_breaks (b, t) -> Extend_breaks (b, map_tags t ~f)
 
 let rec filter_map_tags t ~f =
   match t with
@@ -46,64 +71,94 @@ let rec filter_map_tags t ~f =
   | Hbox t -> Hbox (filter_map_tags t ~f)
   | Hvbox (indent, t) -> Hvbox (indent, filter_map_tags t ~f)
   | Hovbox (indent, t) -> Hovbox (indent, filter_map_tags t ~f)
-  | (Verbatim _ | Char _ | Break _ | Newline | Text _) as t -> t
+  | (Verbatim _ | Char _ | Break _ | Newline) as t -> t
   | Tag (tag, t) -> (
     let t = filter_map_tags t ~f in
     match f tag with
     | None -> t
     | Some tag -> Tag (tag, t) )
+  | Extend_breaks (b, t) -> Extend_breaks (b, filter_map_tags t ~f)
 
 module Render = struct
   open Format
 
-  let rec render ppf t ~tag_handler =
+  let rec render break ppf t ~tag_handler =
     match t with
     | Nop -> ()
     | Seq (a, b) ->
-      render ppf ~tag_handler a;
-      render ppf ~tag_handler b
+      render break ppf ~tag_handler a;
+      render break ppf ~tag_handler b
     | Concat (_, []) -> ()
     | Concat (sep, x :: l) ->
-      render ppf ~tag_handler x;
+      render break ppf ~tag_handler x;
       List.iter l ~f:(fun x ->
-          render ppf ~tag_handler sep;
-          render ppf ~tag_handler x)
+          render break ppf ~tag_handler sep;
+          render break ppf ~tag_handler x)
     | Box (indent, t) ->
       pp_open_box ppf indent;
-      render ppf ~tag_handler t;
+      render break ppf ~tag_handler t;
       pp_close_box ppf ()
     | Vbox (indent, t) ->
       pp_open_vbox ppf indent;
-      render ppf ~tag_handler t;
+      render break ppf ~tag_handler t;
       pp_close_box ppf ()
     | Hbox t ->
       pp_open_hbox ppf ();
-      render ppf ~tag_handler t;
+      render break ppf ~tag_handler t;
       pp_close_box ppf ()
     | Hvbox (indent, t) ->
       pp_open_hvbox ppf indent;
-      render ppf ~tag_handler t;
+      render break ppf ~tag_handler t;
       pp_close_box ppf ()
     | Hovbox (indent, t) ->
       pp_open_hovbox ppf indent;
-      render ppf ~tag_handler t;
+      render break ppf ~tag_handler t;
       pp_close_box ppf ()
     | Verbatim x -> pp_print_string ppf x
     | Char x -> pp_print_char ppf x
-    | Break (fits, breaks) -> pp_print_custom_break ppf ~fits ~breaks
+    | Break break' ->
+      let { Break.fits; breaks } =
+        match break with
+        | None -> break'
+        | Some break -> Break.compose break break'
+      in
+      pp_print_custom_break ppf ~fits ~breaks
+    | Extend_breaks (break', t) ->
+      let break =
+        Some
+          ( match break with
+          | None -> break'
+          | Some break -> Break.compose break break' )
+      in
+      render break ppf t ~tag_handler
     | Newline -> pp_force_newline ppf ()
-    | Text s -> pp_print_text ppf s
-    | Tag (tag, t) -> tag_handler ppf tag t
+    | Tag (tag, t) ->
+      let t =
+        match break with
+        | None -> t
+        | Some break -> Extend_breaks (break, t)
+      in
+      tag_handler ppf tag t
 end
 
-let to_fmt_with_tags = Render.render
+let to_fmt_with_tags ppf t ~tag_handler = Render.render None ppf t ~tag_handler
 
 let rec to_fmt ppf t =
-  Render.render ppf t ~tag_handler:(fun ppf _tag t -> to_fmt ppf t)
+  Render.render None ppf t ~tag_handler:(fun ppf _tag t -> to_fmt ppf t)
 
 let nop = Nop
 
-let seq a b = Seq (a, b)
+let seq a b =
+  match (a, b) with
+  | Nop, _ -> b
+  | _, Nop -> a
+  | _ -> Seq (a, b)
+
+module O = struct
+  let ( ++ ) = seq
+end
+
+open O
 
 let concat ?(sep = Nop) = function
   | [] -> Nop
@@ -136,7 +191,9 @@ let verbatim x = Verbatim x
 
 let char x = Char x
 
-let custom_break ~fits ~breaks = Break (fits, breaks)
+let custom_break ~fits ~breaks = Break { fits; breaks }
+
+let extend_breaks t ~fits ~breaks = Extend_breaks ({ fits; breaks }, t)
 
 let break ~nspaces ~shift =
   custom_break ~fits:("", nspaces, "") ~breaks:("", shift, "")
@@ -147,7 +204,27 @@ let cut = break ~nspaces:0 ~shift:0
 
 let newline = Newline
 
-let text s = Text s
+let text =
+  let add_verbatim s i j acc =
+    if i = j then
+      acc
+    else
+      acc ++ Verbatim (String.sub s ~pos:i ~len:(j - i))
+  in
+  let rec loop s len i j acc =
+    if j = len then
+      add_verbatim s i j acc
+    else
+      match s.[j] with
+      | ' ' ->
+        let acc = add_verbatim s i j acc in
+        loop s len (j + 1) (j + 1) (acc ++ space)
+      | '\n' ->
+        let acc = add_verbatim s i j acc in
+        loop s len (j + 1) (j + 1) (acc ++ newline)
+      | _ -> loop s len i (j + 1) acc
+  in
+  fun s -> loop s (String.length s) 0 0 nop
 
 let textf fmt = Printf.ksprintf text fmt
 
@@ -170,7 +247,3 @@ let chain l ~f =
                     else
                       "-> " ))
                  (f x)))))
-
-module O = struct
-  let ( ++ ) = seq
-end
