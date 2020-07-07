@@ -17,8 +17,7 @@ type +'a t =
   | Hovbox of int * 'a t
   | Verbatim of string
   | Char of char
-  | Break of int * int
-  | Custom_break of (string * int * string) * (string * int * string)
+  | Break of (string * int * string) * (string * int * string)
   | Newline
   | Text of string
   | Tag of 'a * 'a t
@@ -33,8 +32,7 @@ let rec map_tags t ~f =
   | Hbox t -> Hbox (map_tags t ~f)
   | Hvbox (indent, t) -> Hvbox (indent, map_tags t ~f)
   | Hovbox (indent, t) -> Hovbox (indent, map_tags t ~f)
-  | (Verbatim _ | Char _ | Break _ | Custom_break _ | Newline | Text _) as t ->
-    t
+  | (Verbatim _ | Char _ | Break _ | Newline | Text _) as t -> t
   | Tag (tag, t) -> Tag (f tag, map_tags t ~f)
 
 let rec filter_map_tags t ~f =
@@ -48,8 +46,7 @@ let rec filter_map_tags t ~f =
   | Hbox t -> Hbox (filter_map_tags t ~f)
   | Hvbox (indent, t) -> Hvbox (indent, filter_map_tags t ~f)
   | Hovbox (indent, t) -> Hovbox (indent, filter_map_tags t ~f)
-  | (Verbatim _ | Char _ | Break _ | Custom_break _ | Newline | Text _) as t ->
-    t
+  | (Verbatim _ | Char _ | Break _ | Newline | Text _) as t -> t
   | Tag (tag, t) -> (
     let t = filter_map_tags t ~f in
     match f tag with
@@ -93,8 +90,7 @@ module Render = struct
       pp_close_box ppf ()
     | Verbatim x -> pp_print_string ppf x
     | Char x -> pp_print_char ppf x
-    | Break (nspaces, shift) -> pp_print_break ppf nspaces shift
-    | Custom_break (fits, breaks) -> pp_print_custom_break ppf ~fits ~breaks
+    | Break (fits, breaks) -> pp_print_custom_break ppf ~fits ~breaks
     | Newline -> pp_force_newline ppf ()
     | Text s -> pp_print_text ppf s
     | Tag (tag, t) -> tag_handler ppf tag t
@@ -140,13 +136,14 @@ let verbatim x = Verbatim x
 
 let char x = Char x
 
-let break ~nspaces ~shift = Break (nspaces, shift)
+let custom_break ~fits ~breaks = Break (fits, breaks)
 
-let custom_break ~fits ~breaks = Custom_break (fits, breaks)
+let break ~nspaces ~shift =
+  custom_break ~fits:("", nspaces, "") ~breaks:("", shift, "")
 
-let space = Break (1, 0)
+let space = break ~nspaces:1 ~shift:0
 
-let cut = Break (0, 0)
+let cut = break ~nspaces:0 ~shift:0
 
 let newline = Newline
 
