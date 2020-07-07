@@ -43,6 +43,15 @@ val textf : ('a, unit, string, _ t) format4 -> 'a
     or "x\n<indentation>y". *)
 val space : _ t
 
+(** [wrapping_space] is the wrapping alternative of [space], it instructs the
+    pretty-printing algorithm that the line may be broken at this point. If the
+    algorithm decides not to break the line, a single space will be printed
+    instead. If the line breaks, " \\" is printed before the linebreak.
+
+    So for instance [verbatim "x" ++ wrapping_space ++ verbatim "y"] might
+    produce "x y" or "x \\\n<indentation>y". *)
+val wrapping_space : _ t
+
 (** [cut] instructs the pretty-printing algorithm that the line may be broken at
     this point. If the algorithm decides not to break the line, nothing is
     printed instead.
@@ -57,6 +66,14 @@ val cut : _ t
     otherwise [nspaces] spaces will be printed. [shift] can be negative, in
     which case the indentation will be reduced. *)
 val break : nspaces:int -> shift:int -> _ t
+
+(** [wrapping_break] is the wrapping alternative of [break], and a
+    generalisation of [wrapping_space]. It also instructs the pretty-printing
+    algorithm that the line may be broken at this point. If it ends up being
+    broken, " \\" is printed before the linebreak and [shift] will be added to
+    the indentation level, otherwise [nspaces] spaces will be printed. [shift]
+    can be negative, in which case the indentation will be reduced. *)
+val wrapping_break : nspaces:int -> shift:int -> _ t
 
 (** Force a newline to be printed *)
 val newline : _ t

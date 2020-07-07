@@ -195,3 +195,26 @@ let%expect_test _ =
       - scream loudly at your computer
       - take a break from your keyboard
       - clear your head and try again |}]
+
+(* Wrap the formatted lines *)
+let%expect_test _ =
+  print
+    (Pp.hovbox
+       ( Array.make 50 (Pp.char 'x')
+       |> Array.to_list
+       |> Pp.concat ~sep:Pp.wrapping_space ));
+  [%expect
+    {|
+x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x \
+x x x x x x x x x x x x
+|}];
+  print
+    (Pp.hovbox ~indent:2
+       ( Array.make 50 (Pp.char 'x')
+       |> Array.to_list
+       |> Pp.concat ~sep:(Pp.wrapping_break ~nspaces:2 ~shift:(-1)) ));
+  [%expect
+    {|
+x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x \
+ x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x
+|}]
