@@ -175,5 +175,11 @@ val to_fmt_with_tags :
 
 (** {1 Injection} *)
 
-(** Inject a classic formatter in a document *)
+(** Inject a classic formatter in a document.
+
+    Disclaimer: this function is to meant to help using [Pp] in
+    existing code that already use the [Format] module without having
+    to port everything to [Pp]. It is not meant as the normal way to
+    create [Pp.t] values.
+*)
 val of_fmt : (Format.formatter -> 'a -> unit) -> 'a -> _ t
