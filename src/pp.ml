@@ -6,6 +6,24 @@ end
 
 module String = StringLabels
 
+module Ast = struct
+  type +'a t =
+    | Nop
+    | Seq of 'a t * 'a t
+    | Concat of 'a t * 'a t list
+    | Box of int * 'a t
+    | Vbox of int * 'a t
+    | Hbox of 'a t
+    | Hvbox of int * 'a t
+    | Hovbox of int * 'a t
+    | Verbatim of string
+    | Char of char
+    | Break of (string * int * string) * (string * int * string)
+    | Newline
+    | Text of string
+    | Tag of 'a * 'a t
+end
+
 type +'a t =
   | Nop
   | Seq of 'a t * 'a t
@@ -22,6 +40,43 @@ type +'a t =
   | Text of string
   | Tag of 'a * 'a t
   | Format of (Format.formatter -> unit)
+
+let rec of_ast : 'a. 'a Ast.t -> 'a t = function
+  | Nop -> Nop
+  | Seq (x, y) -> Seq (of_ast x, of_ast y)
+  | Concat (x, y) -> Concat (of_ast x, List.map ~f:of_ast y)
+  | Box (x, y) -> Box (x, of_ast y)
+  | Vbox (x, y) -> Vbox (x, of_ast y)
+  | Hbox x -> Hbox (of_ast x)
+  | Hvbox (x, y) -> Hvbox (x, of_ast y)
+  | Hovbox (x, y) -> Hovbox (x, of_ast y)
+  | Verbatim s -> Verbatim s
+  | Char c -> Char c
+  | Break (x, y) -> Break (x, y)
+  | Newline -> Newline
+  | Text s -> Text s
+  | Tag (a, x) -> Tag (a, of_ast x)
+
+let to_ast x =
+  let rec to_ast : 'a t -> 'a Ast.t = function
+    | Nop -> Nop
+    | Seq (x, y) -> Seq (to_ast x, to_ast y)
+    | Concat (x, y) -> Concat (to_ast x, List.map ~f:(fun x -> to_ast x) y)
+    | Box (x, y) -> Box (x, to_ast y)
+    | Vbox (x, y) -> Vbox (x, to_ast y)
+    | Hbox x -> Hbox (to_ast x)
+    | Hvbox (x, y) -> Hvbox (x, to_ast y)
+    | Hovbox (x, y) -> Hovbox (x, to_ast y)
+    | Verbatim s -> Verbatim s
+    | Char c -> Char c
+    | Break (x, y) -> Break (x, y)
+    | Newline -> Newline
+    | Tag (a, x) -> Tag (a, to_ast x)
+    | Text s -> Text s
+    | Format _ -> raise_notrace Exit
+  in
+  try Ok (to_ast x) with
+  | Exit -> Error ()
 
 let rec map_tags t ~f =
   match t with

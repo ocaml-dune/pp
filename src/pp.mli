@@ -183,3 +183,27 @@ val to_fmt_with_tags :
     create [Pp.t] values.
 *)
 val of_fmt : (Format.formatter -> 'a -> unit) -> 'a -> _ t
+
+(** {1 Ast} *)
+
+module Ast : sig
+  type 'a t =
+    | Nop
+    | Seq of 'a t * 'a t
+    | Concat of 'a t * 'a t list
+    | Box of int * 'a t
+    | Vbox of int * 'a t
+    | Hbox of 'a t
+    | Hvbox of int * 'a t
+    | Hovbox of int * 'a t
+    | Verbatim of string
+    | Char of char
+    | Break of (string * int * string) * (string * int * string)
+    | Newline
+    | Text of string
+    | Tag of 'a * 'a t
+end
+
+val of_ast : 'a Ast.t -> 'a t
+
+val to_ast : 'a t -> ('a Ast.t, unit) result
