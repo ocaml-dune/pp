@@ -108,7 +108,7 @@ let rec filter_map_tags t ~f =
     let t = filter_map_tags t ~f in
     match f tag with
     | None -> t
-    | Some tag -> Tag (tag, t) )
+    | Some tag -> Tag (tag, t))
   | Format f -> Format f
 
 module Render = struct
@@ -224,10 +224,10 @@ let chain l ~f =
             box ~indent:3
               (seq
                  (verbatim
-                    ( if i = 0 then
+                    (if i = 0 then
                       "   "
                     else
-                      "-> " ))
+                      "-> "))
                  (f x)))))
 
 module O = struct

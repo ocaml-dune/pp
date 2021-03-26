@@ -159,7 +159,7 @@ let%expect_test _ =
 let%expect_test _ =
   print
     (Pp.vbox
-       ( Pp.box (Pp.text "Error: something went wrong!")
+       (Pp.box (Pp.text "Error: something went wrong!")
        ++ Pp.cut
        ++ Pp.box (Pp.text "Here are a few things you can do:")
        ++ Pp.cut
@@ -180,7 +180,7 @@ let%expect_test _ =
                    ; "take a break from your keyboard"
                    ; "clear your head and try again"
                    ]
-            ] ));
+            ]));
   [%expect
     {|
     Error: something went wrong!
@@ -200,24 +200,24 @@ let%expect_test _ =
 let%expect_test _ =
   print
     (Pp.hovbox ~indent:2
-       ( Array.make 50 (Pp.char 'x')
+       (Array.make 50 (Pp.char 'x')
        |> Array.to_list
        |> Pp.concat
-            ~sep:(Pp.custom_break ~fits:("", 2, "") ~breaks:(" \\", -1, "")) ));
+            ~sep:(Pp.custom_break ~fits:("", 2, "") ~breaks:(" \\", -1, ""))));
   [%expect
     {|
 x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x \
  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x  x
 |}]
 
-let pp_pair ppf (a,b) = Format.fprintf ppf "(%i,@ %i)" a b
+let pp_pair ppf (a, b) = Format.fprintf ppf "(%i,@ %i)" a b
 
 let%expect_test _ =
-  print (
-    Pp.text "hello" ++ Pp.newline ++
-    Pp.vbox (Pp.of_fmt pp_pair (1,2)) ++ Pp.space ++ Pp.text "foo"
-  );
-  [%expect{|
+  print
+    (Pp.text "hello" ++ Pp.newline
+    ++ Pp.vbox (Pp.of_fmt pp_pair (1, 2))
+    ++ Pp.space ++ Pp.text "foo");
+  [%expect {|
     hello
     (1,
     2)
