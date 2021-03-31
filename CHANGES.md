@@ -2,7 +2,7 @@
 -----
 
 - Add `of_fmt` to compose with existing pretty printers written in `Format`
-  (#1).
+  (#1, @Drup).
 
 - Use a tail-recursive `List.map` to fix a stack overflow issue (#3,
   @emillon)
@@ -10,7 +10,8 @@
 - Add `Pp.custom_break` (#4, @gpetiot)
 
 - Add `Ast` sub-module to expose a stable representation for
-  serialization, allowing to do the rendering in another process (#6)
+  serialization, allowing to do the rendering in another process (#6,
+  @rgrinberg)
 
 1.0.1
 -----
