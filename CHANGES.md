@@ -1,5 +1,5 @@
-Next
-----
+1.1.0
+-----
 
 - Add `of_fmt` to compose with existing pretty printers written in `Format`
   (#1).
