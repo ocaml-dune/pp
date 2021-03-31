@@ -1,4 +1,4 @@
-1.1.1
+1.1.2
 -----
 
 - Add `of_fmt` to compose with existing pretty printers written in `Format`
@@ -12,6 +12,16 @@
 - Add `Ast` sub-module to expose a stable representation for
   serialization, allowing to do the rendering in another process (#6,
   @rgrinberg)
+
+1.1.1
+-----
+
+Replaced by 1.1.2 because of wrong URLs in opam file.
+
+1.1.0
+-----
+
+Replaced by 1.1.1 because of missing changelog entries.
 
 1.0.1
 -----
