@@ -6,15 +6,15 @@
 (authors
   "Jane Street Group, LLC <opensource@janestreet.com>"
   "Jeremie Dimino <jeremie@dimino.org>")
-(source (github diml/pp))
-(documentation "https://diml.github.io/pp/")
+(source (github ocaml-dune/pp))
+(documentation "https://ocaml-dune.github.io/pp/")
 
 (generate_opam_files true)
 
 (package
  (name pp)
  (depends
-   (ocaml (>= 4.04.0))
+   (ocaml (>= 4.08.0))
    (ppx_expect :with-test))
  (synopsis "Pretty-printing library")
  (description "
