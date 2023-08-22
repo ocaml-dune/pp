@@ -153,31 +153,33 @@ let%expect_test _ =
     .....x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x
            x x x x x x x x x x x x x x |}]
 
+let error_example_1 =
+  Pp.vbox
+    (Pp.box (Pp.text "Error: something went wrong!")
+    ++ Pp.cut
+    ++ Pp.box (Pp.text "Here are a few things you can do:")
+    ++ Pp.cut
+    ++ Pp.enumerate
+         ~f:(fun x -> x)
+         [ Pp.text
+             "read the documentation, double check the way you are using this \
+              software to make sure you are not doing something wrong, and \
+              hopefully fix the problem on your side and move on"
+         ; Pp.text
+             "strace furiously the program to try and understand why exactly \
+              it is trying to do what it is doing"
+         ; Pp.text "report an issue upstream"
+         ; Pp.text "if all else fails"
+           ++ Pp.cut
+           ++ Pp.enumerate ~f:Pp.text
+                [ "scream loudly at your computer"
+                ; "take a break from your keyboard"
+                ; "clear your head and try again"
+                ]
+         ])
+
 let%expect_test _ =
-  print
-    (Pp.vbox
-       (Pp.box (Pp.text "Error: something went wrong!")
-       ++ Pp.cut
-       ++ Pp.box (Pp.text "Here are a few things you can do:")
-       ++ Pp.cut
-       ++ Pp.enumerate
-            ~f:(fun x -> x)
-            [ Pp.text
-                "read the documentation, double check the way you are using \
-                 this software to make sure you are not doing something wrong, \
-                 and hopefully fix the problem on your side and move on"
-            ; Pp.text
-                "strace furiously the program to try and understand why \
-                 exactly it is trying to do what it is doing"
-            ; Pp.text "report an issue upstream"
-            ; Pp.text "if all else fails"
-              ++ Pp.cut
-              ++ Pp.enumerate ~f:Pp.text
-                   [ "scream loudly at your computer"
-                   ; "take a break from your keyboard"
-                   ; "clear your head and try again"
-                   ]
-            ]));
+  print error_example_1;
   [%expect
     {|
     Error: something went wrong!
@@ -219,3 +221,16 @@ let%expect_test _ =
     (1,
     2)
     foo |}]
+
+let%expect_test "comparison" =
+  let x = error_example_1
+  and y = Pp.hovbox ~indent:2 (xs 200) in
+  let print x = Printf.printf "comparison result: %d\n" x in
+  print (Pp.compare (fun _ _ -> 0) x y);
+  print (Pp.compare (fun _ _ -> 0) x x);
+  print (Pp.compare (fun _ _ -> 0) y x);
+  [%expect
+    {|
+    comparison result: -1
+    comparison result: 0
+    comparison result: 1 |}]

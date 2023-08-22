@@ -1,3 +1,8 @@
+Unreleased
+----------
+
+- Add `Pp.compare` (#9, @Alizter)
+
 1.1.2
 -----
 
