@@ -161,7 +161,6 @@ let rec to_fmt ppf t =
   Render.render ppf t ~tag_handler:(fun ppf _tag t -> to_fmt ppf t)
 
 let nop = Nop
-
 let seq a b = Seq (a, b)
 
 let concat ?(sep = Nop) = function
@@ -182,34 +181,22 @@ let concat_mapi ?(sep = Nop) l ~f =
   | l -> Concat (sep, List.mapi l ~f)
 
 let box ?(indent = 0) t = Box (indent, t)
-
 let vbox ?(indent = 0) t = Vbox (indent, t)
-
 let hbox t = Hbox t
-
 let hvbox ?(indent = 0) t = Hvbox (indent, t)
-
 let hovbox ?(indent = 0) t = Hovbox (indent, t)
-
 let verbatim x = Verbatim x
-
 let char x = Char x
-
 let custom_break ~fits ~breaks = Break (fits, breaks)
 
 let break ~nspaces ~shift =
   custom_break ~fits:("", nspaces, "") ~breaks:("", shift, "")
 
 let space = break ~nspaces:1 ~shift:0
-
 let cut = break ~nspaces:0 ~shift:0
-
 let newline = Newline
-
 let text s = Text s
-
 let textf fmt = Printf.ksprintf text fmt
-
 let tag tag t = Tag (tag, t)
 
 let enumerate l ~f =
@@ -225,9 +212,9 @@ let chain l ~f =
               (seq
                  (verbatim
                     (if i = 0 then
-                      "   "
-                    else
-                      "-> "))
+                       "   "
+                     else
+                       "-> "))
                  (f x)))))
 
 module O = struct
