@@ -91,7 +91,9 @@ val newline : _ t
     And the top left corner of this shape is anchored where the box was
     declared. So for instance, the following document:
 
-    {[ Pp.verbatim "....." ++ Pp.box ~indent:2 (Pp.text "some long ... text") ]}
+    {[
+      Pp.verbatim "....." ++ Pp.box ~indent:2 (Pp.text "some long ... text")
+    ]}
 
     would produce:
 

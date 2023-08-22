@@ -2,11 +2,8 @@ open StdLabels
 open Pp.O
 
 let print pp = Format.printf "%a@." Pp.to_fmt pp
-
 let many n pp = Array.make n pp |> Array.to_list |> Pp.concat ~sep:Pp.space
-
 let xs n = many n (Pp.char 'x')
-
 let ys n = many n (Pp.char 'y')
 
 let%expect_test _ =
