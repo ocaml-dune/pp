@@ -1,7 +1,11 @@
 (** Pretty-printing. *)
 
-(** A document that is not yet rendered. The argument is the type of tags in the
-    document. For instance tags might be used for styles. *)
+(** ['tag t] represents a document that is not yet rendered. The argument ['tag]
+    is the type of tags in the document. For instance tags might be used for
+    styles.
+
+    If you want to serialise and deserialise this datastructure, you can use the
+    [Ast.t] type together with the [of_ast] and [to_ast] functions. *)
 type +'tag t
 
 (** {1 Basic combinators} *)
@@ -183,20 +187,14 @@ val to_fmt_with_tags :
   -> tag_handler:(Format.formatter -> 'tag -> 'tag t -> unit)
   -> unit
 
-(** {1 Injection} *)
-
-(** Inject a classic formatter in a document.
-
-    Disclaimer: this function is to meant to help using [Pp] in existing code
-    that already use the [Format] module without having to port everything to
-    [Pp]. It is not meant as the normal way to create [Pp.t] values. *)
-val of_fmt : (Format.formatter -> 'tag -> unit) -> 'tag -> 'tag t
-
 (** {1 Ast} *)
 
 module Ast : sig
-  (** Stable representation useful for serialization *)
-  type 'tag t =
+  (** Stable representation of [Pp.t] useful for serialization *)
+
+  (** Stable abstract syntax tree for [Pp.t] that can be used for serialization
+      and deserialization. *)
+  type +'tag t =
     | Nop
     | Seq of 'tag t * 'tag t
     | Concat of 'tag t * 'tag t list
@@ -213,16 +211,13 @@ module Ast : sig
     | Tag of 'tag * 'tag t
 end
 
-(** [of_ast t] [Ast.t] to [Pp.t] *)
+(** [of_ast t] converts an [Ast.t] to a [Pp.t]. *)
 val of_ast : 'tag Ast.t -> 'tag t
 
-(** [to_ast t] will try to convert [t] to [Ast.t]. When [t] contains values
-    constructed with [of_fmt], this function will fail and return [Error ()] *)
-val to_ast : 'tag t -> ('tag Ast.t, unit) result
+(** [to_ast t] converts a [Pp.t] to an [Ast.t]. *)
+val to_ast : 'tag t -> 'tag Ast.t
 
 (** {1 Comparison} *)
 
-(** [compare cmp x y] compares [x] and [y] using [cmp] to compare tags.
-
-    @raise Invalid_argument if two [of_fmt] values are compared. *)
+(** [compare cmp x y] compares [x] and [y] using [cmp] to compare tags. *)
 val compare : ('tag -> 'tag -> int) -> 'tag t -> 'tag t -> int

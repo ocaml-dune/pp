@@ -1,3 +1,8 @@
+Unreleased
+----------
+
+- Remove `of_fmt` constructor. (#17, @Alizter)
+
 1.2.0
 -----
 
