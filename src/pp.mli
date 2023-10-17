@@ -142,6 +142,14 @@ val filter_map_tags :
 
 (** {1 Convenience functions} *)
 
+(** [paragraph s] is [hovbox (text s)]. This is useful to preserve the structure
+    of a paragraph of text without worrying about it being broken by a [vbox]. *)
+val paragraph : string -> 'tag t
+
+(** [paragraphf s] is [textf s] followed by a [hovbox]. The [textf] version of
+    [paragraph]. *)
+val paragraphf : ('tag t, unit, string, 'b t) format4 -> 'tag t
+
 (** [enumerate l ~f] produces an enumeration of the form:
 
     {v

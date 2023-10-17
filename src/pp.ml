@@ -198,6 +198,8 @@ let newline = Newline
 let text s = Text s
 let textf fmt = Printf.ksprintf text fmt
 let tag tag t = Tag (tag, t)
+let paragraph s = hovbox (text s)
+let paragraphf fmt = hovbox (textf fmt)
 
 let enumerate l ~f =
   vbox
