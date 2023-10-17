@@ -7,31 +7,32 @@ type +'tag t
 (** {1 Basic combinators} *)
 
 (** A pretty printer that prints nothing *)
-val nop : _ t
+val nop : 'tag t
 
 (** [seq x y] prints [x] and then [y] *)
-val seq : 'a t -> 'a t -> 'a t
+val seq : 'tag t -> 'tag t -> 'tag t
 
 (** [concat ?sep l] prints elements in [l] separated by [sep]. [sep] defaults to
     [nop]. *)
-val concat : ?sep:'a t -> 'a t list -> 'a t
+val concat : ?sep:'tag t -> 'tag t list -> 'tag t
 
-(** Convenience function for [List.map] followed by [concat] *)
-val concat_map : ?sep:'a t -> 'b list -> f:('b -> 'a t) -> 'a t
+(** Convenience function for [List.map] followed by [concat]. *)
+val concat_map : ?sep:'tag t -> 'a list -> f:('a -> 'tag t) -> 'tag t
 
-val concat_mapi : ?sep:'a t -> 'b list -> f:(int -> 'b -> 'a t) -> 'a t
+(** Convenience function for [List.mapi] followed by [concat]. *)
+val concat_mapi : ?sep:'tag t -> 'a list -> f:(int -> 'a -> 'tag t) -> 'tag t
 
-(** An indivisible block of text *)
-val verbatim : string -> _ t
+(** An indivisible block of text. *)
+val verbatim : string -> 'tag t
 
-(** A single character *)
-val char : char -> _ t
+(** A single character. *)
+val char : char -> 'tag t
 
 (** Print a bunch of text. The line may be broken at any spaces in the text. *)
-val text : string -> _ t
+val text : string -> 'tag t
 
 (** Same as [text] but take a format string as argument. *)
-val textf : ('a, unit, string, _ t) format4 -> 'a
+val textf : ('a, unit, string, 'tag t) format4 -> 'a
 
 (** {1 Break hints} *)
 
@@ -41,7 +42,7 @@ val textf : ('a, unit, string, _ t) format4 -> 'a
 
     So for instance [verbatim "x" ++ space ++ verbatim "y"] might produce "x y"
     or "x\n<indentation>y". *)
-val space : _ t
+val space : 'tag t
 
 (** [cut] instructs the pretty-printing algorithm that the line may be broken at
     this point. If the algorithm decides not to break the line, nothing is
@@ -49,14 +50,14 @@ val space : _ t
 
     So for instance [verbatim "x" ++ space ++ verbatim "y"] might produce "xy"
     or "x\n<indentation>y". *)
-val cut : _ t
+val cut : 'tag t
 
 (** [break] is a generalisation of [space] and [cut]. It also instructs the
     pretty-printing algorithm that the line may be broken at this point. If it
     ends up being broken, [shift] will be added to the indentation level,
     otherwise [nspaces] spaces will be printed. [shift] can be negative, in
     which case the indentation will be reduced. *)
-val break : nspaces:int -> shift:int -> _ t
+val break : nspaces:int -> shift:int -> 'tag t
 
 (** [custom_break ~fits:(a, b, c) ~breaks:(x, y, z)] is a generalisation of
     [break]. It also instructs the pretty-printing algorithm that the line may
@@ -66,10 +67,13 @@ val break : nspaces:int -> shift:int -> _ t
     printed. The indentation [y] can be negative, in which case the indentation
     will be reduced. *)
 val custom_break :
-  fits:string * int * string -> breaks:string * int * string -> _ t
+  fits:string * int * string -> breaks:string * int * string -> 'tag t
 
-(** Force a newline to be printed *)
-val newline : _ t
+(** Force a newline to be printed. Usage is discourage since it breaks printing
+    with boxes. If you need to add breaks to your text, put your items into
+    [box]es and [concat] with a separating [space] afterwhich wrapping it in a
+    [vbox]. *)
+val newline : 'tag t
 
 (** {1 Boxes} *)
 
@@ -105,20 +109,20 @@ val newline : _ t
 (** Try to put as much as possible on each line. Additionally, a break hint
     always break the line if the breaking would reduce the indentation level
     inside the box ([break] with negative [shift] value). *)
-val box : ?indent:int -> 'a t -> 'a t
+val box : ?indent:int -> 'tag t -> 'tag t
 
 (** Always break the line when encountering a break hint. *)
-val vbox : ?indent:int -> 'a t -> 'a t
+val vbox : ?indent:int -> 'tag t -> 'tag t
 
 (** Print everything on one line, no matter what *)
-val hbox : 'a t -> 'a t
+val hbox : 'tag t -> 'tag t
 
 (** If possible, print everything on one line. Otherwise, behave as a [vbox] *)
-val hvbox : ?indent:int -> 'a t -> 'a t
+val hvbox : ?indent:int -> 'tag t -> 'tag t
 
 (** Try to put as much as possible on each line. Basically the same as [box] but
     without the rule about breaks with negative [shift] value. *)
-val hovbox : ?indent:int -> 'a t -> 'a t
+val hovbox : ?indent:int -> 'tag t -> 'tag t
 
 (** {1 Tags} *)
 
@@ -127,12 +131,14 @@ val hovbox : ?indent:int -> 'a t -> 'a t
     terminal with colors. *)
 
 (** [tag x t] Tag the material printed by [t] with [x] *)
-val tag : 'a -> 'a t -> 'a t
+val tag : 'tag -> 'tag t -> 'tag t
 
 (** Convert tags in a documents *)
-val map_tags : 'a t -> f:('a -> 'b) -> 'b t
+val map_tags : 'from_tag t -> f:('from_tag -> 'to_tag) -> 'to_tag t
 
-val filter_map_tags : 'a t -> f:('a -> 'b option) -> 'b t
+(** Convert tags in a documents, possibly removing some tags. *)
+val filter_map_tags :
+  'from_tag t -> f:('from_tag -> 'to_tag option) -> 'to_tag t
 
 (** {1 Convenience functions} *)
 
@@ -144,7 +150,7 @@ val filter_map_tags : 'a t -> f:('a -> 'b option) -> 'b t
       - item3
       ...
     v} *)
-val enumerate : 'a list -> f:('a -> 'b t) -> 'b t
+val enumerate : 'a list -> f:('a -> 'tag t) -> 'tag t
 
 (** [chain l ~f] is used to print a succession of items that follow each other.
     It produces an output of this form:
@@ -155,24 +161,26 @@ val enumerate : 'a list -> f:('a -> 'b t) -> 'b t
       -> item3
       ...
     v} *)
-val chain : 'a list -> f:('a -> 'b t) -> 'b t
+val chain : 'a list -> f:('a -> 'tag t) -> 'tag t
 
 (** {1 Operators} *)
 
 module O : sig
+  (** Infix operators for [Pp.t] *)
+
   (** Same as [seq] *)
-  val ( ++ ) : 'a t -> 'a t -> 'a t
+  val ( ++ ) : 'tag t -> 'tag t -> 'tag t
 end
 
 (** {1 Rendering} *)
 
 (** Render a document to a classic formatter *)
-val to_fmt : Format.formatter -> _ t -> unit
+val to_fmt : Format.formatter -> 'tag t -> unit
 
 val to_fmt_with_tags :
      Format.formatter
-  -> 'a t
-  -> tag_handler:(Format.formatter -> 'a -> 'a t -> unit)
+  -> 'tag t
+  -> tag_handler:(Format.formatter -> 'tag -> 'tag t -> unit)
   -> unit
 
 (** {1 Injection} *)
@@ -182,39 +190,39 @@ val to_fmt_with_tags :
     Disclaimer: this function is to meant to help using [Pp] in existing code
     that already use the [Format] module without having to port everything to
     [Pp]. It is not meant as the normal way to create [Pp.t] values. *)
-val of_fmt : (Format.formatter -> 'a -> unit) -> 'a -> _ t
+val of_fmt : (Format.formatter -> 'tag -> unit) -> 'tag -> 'tag t
 
 (** {1 Ast} *)
 
 module Ast : sig
   (** Stable representation useful for serialization *)
-  type 'a t =
+  type 'tag t =
     | Nop
-    | Seq of 'a t * 'a t
-    | Concat of 'a t * 'a t list
-    | Box of int * 'a t
-    | Vbox of int * 'a t
-    | Hbox of 'a t
-    | Hvbox of int * 'a t
-    | Hovbox of int * 'a t
+    | Seq of 'tag t * 'tag t
+    | Concat of 'tag t * 'tag t list
+    | Box of int * 'tag t
+    | Vbox of int * 'tag t
+    | Hbox of 'tag t
+    | Hvbox of int * 'tag t
+    | Hovbox of int * 'tag t
     | Verbatim of string
     | Char of char
     | Break of (string * int * string) * (string * int * string)
     | Newline
     | Text of string
-    | Tag of 'a * 'a t
+    | Tag of 'tag * 'tag t
 end
 
 (** [of_ast t] [Ast.t] to [Pp.t] *)
-val of_ast : 'a Ast.t -> 'a t
+val of_ast : 'tag Ast.t -> 'tag t
 
 (** [to_ast t] will try to convert [t] to [Ast.t]. When [t] contains values
     constructed with [of_fmt], this function will fail and return [Error ()] *)
-val to_ast : 'a t -> ('a Ast.t, unit) result
+val to_ast : 'tag t -> ('tag Ast.t, unit) result
 
 (** {1 Comparison} *)
 
 (** [compare cmp x y] compares [x] and [y] using [cmp] to compare tags.
 
     @raise Invalid_argument if two [of_fmt] values are compared. *)
-val compare : ('a -> 'a -> int) -> 'a t -> 'a t -> int
+val compare : ('tag -> 'tag -> int) -> 'tag t -> 'tag t -> int
