@@ -234,3 +234,105 @@ let%expect_test "comparison" =
     comparison result: -1
     comparison result: 0
     comparison result: 1 |}]
+
+(* The differnces between [Pp.paragraph], [Pp.text], [Pp.verbatim] and box +
+   [Pp.text] when inside a [Pp.vbox]. *)
+let%expect_test "paragraph" =
+  let lorem =
+    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum \
+     euismod, nisl eget aliquam ultricies."
+  in
+  let seperator text _ =
+    Pp.vbox
+    @@ Pp.seq Pp.space
+         (Pp.hbox
+         @@ Pp.textf "-< %s >-%s" text
+              (String.init (20 - String.length text) ~f:(fun _ -> '-')))
+  in
+  print @@ Pp.vbox
+  @@ Pp.concat_map ~sep:Pp.space
+       ~f:(fun f -> f lorem)
+       [ seperator "verbatim"
+       ; Pp.verbatim
+       ; seperator "text"
+       ; Pp.text
+       ; seperator "paragraph"
+       ; Pp.paragraph
+       ; seperator "hovbox + text"
+       ; (fun x -> Pp.hovbox (Pp.text x))
+       ; seperator "hvbox + text"
+       ; (fun x -> Pp.hvbox (Pp.text x))
+       ; seperator "hbox + text"
+       ; (fun x -> Pp.hbox (Pp.text x))
+       ; seperator "vbox + text"
+       ; (fun x -> Pp.vbox (Pp.text x))
+       ; seperator "box + text"
+       ; (fun x -> Pp.box (Pp.text x))
+       ];
+  [%expect
+    {|
+    -< verbatim >-------------
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum euismod, nisl eget aliquam ultricies.
+
+    -< text >-----------------
+    Lorem
+    ipsum
+    dolor
+    sit
+    amet,
+    consectetur
+    adipiscing
+    elit.
+    Vestibulum
+    euismod,
+    nisl
+    eget
+    aliquam
+    ultricies.
+
+    -< paragraph >------------
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum euismod,
+    nisl eget aliquam ultricies.
+
+    -< hovbox + text >--------
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum euismod,
+    nisl eget aliquam ultricies.
+
+    -< hvbox + text >---------
+    Lorem
+    ipsum
+    dolor
+    sit
+    amet,
+    consectetur
+    adipiscing
+    elit.
+    Vestibulum
+    euismod,
+    nisl
+    eget
+    aliquam
+    ultricies.
+
+    -< hbox + text >----------
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum euismod, nisl eget aliquam ultricies.
+
+    -< vbox + text >----------
+    Lorem
+    ipsum
+    dolor
+    sit
+    amet,
+    consectetur
+    adipiscing
+    elit.
+    Vestibulum
+    euismod,
+    nisl
+    eget
+    aliquam
+    ultricies.
+
+    -< box + text >-----------
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum euismod,
+    nisl eget aliquam ultricies. |}]
