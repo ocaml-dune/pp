@@ -1,6 +1,8 @@
 Unreleased
 ----------
 
+- Add `Pp.verbatimf`. (@mbarbin)
+
 - Remove `of_fmt` constructor. (#17, @Alizter)
 
 1.2.0
