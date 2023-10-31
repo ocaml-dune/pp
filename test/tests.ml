@@ -327,3 +327,6 @@ let%expect_test "paragraph" =
     -< box + text >-----------
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum euismod,
     nisl eget aliquam ultricies. |}]
+
+let%expect_test "paragraphf" = print (Pp.paragraphf "Hello World%s" "!");
+  [%expect {| Hello World! |}]

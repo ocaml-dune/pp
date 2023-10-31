@@ -155,7 +155,7 @@ val paragraph : string -> 'tag t
 
 (** [paragraphf s] is [textf s] followed by a [hovbox]. The [textf] version of
     [paragraph]. *)
-val paragraphf : ('tag t, unit, string, 'b t) format4 -> 'tag t
+val paragraphf : ('a, unit, string, 'tag t) format4 -> 'a
 
 (** [enumerate l ~f] produces an enumeration of the form:
 
