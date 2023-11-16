@@ -3,6 +3,8 @@ Unreleased
 
 - Add `Pp.verbatimf`. (#18, @mbarbin)
 
+- Add `Pp.paragraph` and `Pp.paragraphf` (#19, @Alizter)
+
 - Remove `of_fmt` constructor. (#17, @Alizter)
 
 1.2.0

@@ -29,6 +29,8 @@ include Ast
 let of_ast = Fun.id
 let to_ast = Fun.id
 
+type ('a, 'tag) format_string = ('a, unit, string, 'tag t) format4
+
 let rec map_tags t ~f =
   match t with
   | Nop -> Nop
@@ -145,10 +147,10 @@ let space = break ~nspaces:1 ~shift:0
 let cut = break ~nspaces:0 ~shift:0
 let newline = Newline
 let text s = Text s
-let textf fmt = Printf.ksprintf text fmt
+let textf (fmt : ('a, 'tag) format_string) = Printf.ksprintf text fmt
 let tag tag t = Tag (tag, t)
 let paragraph s = hovbox (text s)
-let paragraphf fmt = hovbox (textf fmt)
+let paragraphf (fmt : ('a, 'tag) format_string) = Printf.ksprintf paragraph fmt
 
 let enumerate l ~f =
   vbox
