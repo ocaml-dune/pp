@@ -134,6 +134,7 @@ let hbox t = Hbox t
 let hvbox ?(indent = 0) t = Hvbox (indent, t)
 let hovbox ?(indent = 0) t = Hovbox (indent, t)
 let verbatim x = Verbatim x
+let verbatimf fmt = Printf.ksprintf verbatim fmt
 let char x = Char x
 let custom_break ~fits ~breaks = Break (fits, breaks)
 

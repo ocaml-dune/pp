@@ -102,6 +102,10 @@ Hello x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x
   x x x x x x x x x x x x
 |}]
 
+let%expect_test "verbatimf" =
+  print (Pp.verbatimf "ident%d" 42);
+  [%expect {| ident42 |}]
+
 (* Difference between box and hovbox *)
 let%expect_test _ =
   let pp f = f (xs 50 ++ Pp.break ~nspaces:2 ~shift:(-1) ++ xs 10) in

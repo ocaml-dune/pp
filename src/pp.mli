@@ -29,6 +29,9 @@ val concat_mapi : ?sep:'tag t -> 'a list -> f:(int -> 'a -> 'tag t) -> 'tag t
 (** An indivisible block of text. *)
 val verbatim : string -> 'tag t
 
+(** Same as [verbatim] but take a format string as argument. *)
+val verbatimf : ('a, unit, string, 'tag t) format4 -> 'a
+
 (** A single character. *)
 val char : char -> 'tag t
 
