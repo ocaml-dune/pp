@@ -15,7 +15,11 @@
  (name pp)
  (depends
    (ocaml (>= 4.08.0))
-   (ppx_expect :with-test))
+   (ppx_expect :with-test)
+   (ocamlformat
+    (and
+     :with-dev-setup
+     (= 0.26.0))))
  (synopsis "Pretty-printing library")
  (description "
 This library provides a lean alternative to the Format [1] module of
