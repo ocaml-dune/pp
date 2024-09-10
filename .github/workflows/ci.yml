@@ -14,8 +14,28 @@ jobs:
           - ubuntu-latest
           - windows-latest
         ocaml-compiler:
+          - 5.2.x
           - 4.14.x
-          - 4.08.x
+          - 4.13.x
+        include:
+          # OCaml 4.12.x: skipping windows (fail)
+          - ocaml-compiler: 4.12.x
+            os: ubuntu-latest
+          - ocaml-compiler: 4.12.x
+            os: macos-latest
+          # OCaml 4.11.x: skipping macos & windows (fail)
+          - ocaml-compiler: 4.11.x
+            os: ubuntu-latest
+          # OCaml 4.10.x: skipping windows (fail)
+          - ocaml-compiler: 4.10.x
+            os: ubuntu-latest
+          - ocaml-compiler: 4.10.x
+            os: macos-latest
+          # OCaml 4.08.x: skipping macos & windows (fail)
+          # Keep the minimal version of OCaml in sync in here, `dune-project`
+          # and `dune-workspace.dev`.
+          - ocaml-compiler: 4.08.x
+            os: ubuntu-latest
 
     runs-on: ${{ matrix.os }}
 
