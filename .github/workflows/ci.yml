@@ -34,8 +34,20 @@ jobs:
         with:
           ocaml-compiler: ${{ matrix.ocaml-compiler }}
 
-      - run: opam install . --deps-only --with-test
+      - name: Install dependencies
+        run: opam install . --deps-only --with-doc --with-test --with-dev-setup
 
-      - run: opam exec -- dune build
+      - name: Build
+        run: opam exec -- dune build
 
-      - run: opam exec -- dune runtest
+      - name: Run tests
+        run: opam exec -- dune runtest
+
+      - name: Check for uncommitted changes
+        run: git diff --exit-code
+
+      - name: Lint fmt
+        uses: ocaml/setup-ocaml/lint-fmt@v3
+
+      - name: Lint doc
+        uses: ocaml/setup-ocaml/lint-doc@v3
