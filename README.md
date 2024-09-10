@@ -1,6 +1,8 @@
 Pp - Pretty printing
 ====================
 
+[![CI Status](https://github.com/ocaml-dune/pp/workflows/CI/badge.svg)](https://github.com/ocaml-dune/pp/actions/workflows/ci.yml)
+
 This library provides a lean alternative to the [Format][format]
 module of the OCaml standard library. It aims to make it easy for
 users to do the right thing. If you have tried `Format` before but
