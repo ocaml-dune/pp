@@ -17,9 +17,6 @@ reinstall: uninstall install
 clean:
 	dune clean
 
-all-supported-ocaml-versions:
-	dune runtest --workspace dune-workspace.dev
-
 release:
 	dune-release tag
 	dune-release distrib --skip-build --skip-lint --skip-tests -n pp

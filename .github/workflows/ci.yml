@@ -32,8 +32,7 @@ jobs:
           - ocaml-compiler: 4.10.x
             os: macos-latest
           # OCaml 4.08.x: skipping macos & windows (fail)
-          # Keep the minimal version of OCaml in sync in here, `dune-project`
-          # and `dune-workspace.dev`.
+          # Keep the minimal version of OCaml in sync in here and `dune-project`
           - ocaml-compiler: 4.08.x
             os: ubuntu-latest
 
