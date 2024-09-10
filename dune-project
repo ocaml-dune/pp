@@ -19,7 +19,7 @@
    (ocamlformat
     (and
      :with-dev-setup
-     (= 0.26.0))))
+     (= 0.26.2))))
  (synopsis "Pretty-printing library")
  (description "
 This library provides a lean alternative to the Format [1] module of
