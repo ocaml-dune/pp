@@ -14,7 +14,7 @@
 (package
  (name pp)
  (depends
-   (ocaml (>= 4.08.0))
+   (ocaml (>= 4.08))
    (ppx_expect :with-test)
    (ocamlformat
     (and
