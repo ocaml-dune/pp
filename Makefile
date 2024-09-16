@@ -19,10 +19,10 @@ clean:
 
 release:
 	dune-release tag
-	dune-release distrib --skip-build --skip-lint --skip-tests -n pp
-# See https://github.com/ocamllabs/dune-release/issues/206
-	DUNE_RELEASE_DELEGATE=github-dune-release-delegate dune-release publish distrib --verbose -n pp
-	dune-release opam pkg -n pp
-	dune-release opam submit -n pp
+	dune-release distrib --skip-build --skip-lint --skip-tests
+	dune-release publish distrib --verbose
+	dune-release publish doc --verbose
+	dune-release opam pkg
+	dune-release opam submit
 
 .PHONY: default install uninstall reinstall clean test
