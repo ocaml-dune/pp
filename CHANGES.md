@@ -1,3 +1,8 @@
+Unreleased
+----------
+
+- Update `make release` for `dune-release.2.0.0` (#22, @mbarbin).
+
 2.0.0
 -----
 
