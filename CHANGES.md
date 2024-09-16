@@ -1,5 +1,13 @@
-Unreleased
-----------
+2.0.0
+-----
+
+- Prepare release (#21, @mbarbin)
+  - Upgrade to `ocamlformat.0.26.2`.
+  - Fmt the code
+  - Add CI badge to README
+  - Upgrade GitHub workflow actions dependencies (checkout@v4, setup-ocaml@v3)
+  - Add more validation steps in CI
+  - Add `ocamlformat` as dev-setup dependency
 
 - Add `Pp.verbatimf`. (#18, @mbarbin)
 
